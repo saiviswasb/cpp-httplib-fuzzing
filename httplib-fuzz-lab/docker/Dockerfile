@@ -31,6 +31,10 @@ RUN git clone --depth 1 --branch ${AFLPP_TAG} \
  && make install \
  && test -x /usr/local/bin/afl-fuzz && test -x /usr/local/bin/afl-clang-fast++
 
+# The repo is mounted from the host and owned by the host user, not root.
+# Without this, git inside the container refuses to touch third_party/.
+RUN git config --system --add safe.directory '*'
+
 ENV CXX=clang++-${LLVM_VERSION} \
     AFL_SKIP_CPUFREQ=1
 WORKDIR /work

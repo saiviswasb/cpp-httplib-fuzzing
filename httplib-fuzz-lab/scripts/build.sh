@@ -19,7 +19,8 @@ command -v "$CXX" >/dev/null || CXX=clang++
 TARGETS=("$@")
 if [[ ${#TARGETS[@]} -eq 0 ]]; then
   TARGETS=(server_fuzzer client_fuzzer header_parser_fuzzer
-           url_parser_fuzzer multipart_parser_fuzzer)
+           url_parser_fuzzer multipart_parser_fuzzer
+           websocket_frame_fuzzer)
 fi
 
 COMMON=(-std=c++17 -g -I"$HTTPLIB" -I"$UPSTREAM_FUZZ" -DCPPHTTPLIB_ZLIB_SUPPORT)
