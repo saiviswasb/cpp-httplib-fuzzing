@@ -15,7 +15,7 @@ public:
         : data_(reinterpret_cast<const char *>(data)), size_(size), position_(0) {}
 
     bool is_readable() const override { return position_ < size_; }
-    bool is_writable() const override { return false; }
+    bool is_writable() const { return false; }
 
     ssize_t read(char *ptr, size_t size) override {
         if (position_ >= size_) return -1;
@@ -46,17 +46,18 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     BufferStream strm(data, size);
     std::string out_body;
-    httplib::Headers headers;
+    httplib::Response res;
+    size_t max_payload_len = 65536;
 
     try {
-        // Exercise internal chunked HTTP body decoder
-        httplib::detail::parse_chunked_body(
+        httplib::detail::read_content_chunked(
             strm,
-            [&out_body](const char *buf, size_t len) {
+            res,
+            max_payload_len,
+            [&out_body](const char *buf, size_t len, uint64_t /*offset*/, uint64_t /*total*/) {
                 out_body.append(buf, len);
                 return true;
-            },
-            headers
+            }
         );
     } catch (const std::exception &) {
         // Catch parsing/boundary exceptions gracefully

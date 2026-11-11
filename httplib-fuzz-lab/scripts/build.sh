@@ -1,56 +1,35 @@
 #!/usr/bin/env bash
-# Build every fuzz target in three variants:
-#   out/afl/<t>   AFL++ instrumented + ASan + UBSan   -> used for fuzzing
-#   out/plain/<t> AFL++ instrumented, no sanitizers   -> used by afl-cmin
-#   out/cov/<t>   clang source-based coverage         -> used to measure runs
-#
-# Usage: scripts/build.sh [target ...]   (default: all upstream targets)
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-source "$ROOT/scripts/versions.env"
 
-HTTPLIB="$ROOT/third_party/cpp-httplib"
-UPSTREAM_FUZZ="$HTTPLIB/test/fuzzing"
-OUT="$ROOT/out"
-AFL_CXX="${AFL_CXX:-afl-clang-fast++}"
-CXX="${CXX:-clang++-$LLVM_VERSION}"
-command -v "$CXX" >/dev/null || CXX=clang++
+OUT_DIR="/work/out"
+mkdir -p "${OUT_DIR}/afl" "${OUT_DIR}/plain" "${OUT_DIR}/cov"
 
-TARGETS=("$@")
-if [[ ${#TARGETS[@]} -eq 0 ]]; then
-  TARGETS=(server_fuzzer client_fuzzer header_parser_fuzzer
-           url_parser_fuzzer multipart_parser_fuzzer
-           websocket_frame_fuzzer)
-fi
+AFL_CXX=${AFL_CXX:-afl-clang-fast++}
+PLAIN_CXX=${PLAIN_CXX:-clang++-18}
+COV_CXX=${COV_CXX:-clang++-18}
+CXXFLAGS="${CXXFLAGS:- -O2 -g -std=c++17}"
 
-COMMON=(-std=c++17 -g -I"$HTTPLIB" -I"$UPSTREAM_FUZZ" -DCPPHTTPLIB_ZLIB_SUPPORT)
-LIBS=(-lz -pthread)
+TARGETS=(
+  "server_fuzzer"
+  "client_fuzzer"
+  "header_parser_fuzzer"
+  "url_parser_fuzzer"
+  "multipart_parser_fuzzer"
+  "websocket_frame_fuzzer"
+  "chunked_decoder_fuzzer"
+)
 
-mkdir -p "$OUT"/{afl,plain,cov}
+for target in "${TARGETS[@]}"; do
+  if [ -f "harness/${target}.cc" ]; then
+    SRC="harness/${target}.cc"
+  else
+    SRC="third_party/cpp-httplib/test/fuzzing/${target}.cc"
+  fi
 
-src_for() {  # our own harnesses in harness/ take priority over upstream's
-  if [[ -f "$ROOT/harness/$1.cc" ]]; then echo "$ROOT/harness/$1.cc"
-  else echo "$UPSTREAM_FUZZ/$1.cc"; fi
-}
-
-for t in "${TARGETS[@]}"; do
-  src="$(src_for "$t")"
-  echo "[build] $t  <- ${src#$ROOT/}"
-
-  # 1. Fuzzing build. -fsanitize=fuzzer makes afl-clang-fast link libAFLDriver,
-  #    which supplies main() and calls LLVMFuzzerInitialize/TestOneInput.
-  #    -fno-sanitize-recover makes UBSan abort, so AFL++ records it as a crash.
-  AFL_QUIET=1 "$AFL_CXX" "${COMMON[@]}" -O1 \
-      -fsanitize=fuzzer,address,undefined -fno-sanitize-recover=all \
-      -fno-omit-frame-pointer \
-      "$src" -o "$OUT/afl/$t" "${LIBS[@]}"
-
-  # 2. Same instrumentation, no sanitizers: faster, used for afl-cmin.
-  AFL_QUIET=1 "$AFL_CXX" "${COMMON[@]}" -O1 -fsanitize=fuzzer \
-      "$src" -o "$OUT/plain/$t" "${LIBS[@]}"
-
-  # 3. Coverage build: plain clang, no AFL instrumentation, our own runner.
-  "$CXX" "${COMMON[@]}" -O0 -fprofile-instr-generate -fcoverage-mapping \
-      "$src" "$ROOT/harness/cov_runner.cc" -o "$OUT/cov/$t" "${LIBS[@]}"
+  echo "[build] ${target} <- ${SRC}"
+  $AFL_CXX $CXXFLAGS -Ithird_party/cpp-httplib "${SRC}" harness/cov_runner.cc -o "${OUT_DIR}/afl/${target}"
+  $PLAIN_CXX $CXXFLAGS -Ithird_party/cpp-httplib "${SRC}" harness/cov_runner.cc -o "${OUT_DIR}/plain/${target}"
+  $COV_CXX $CXXFLAGS -fprofile-instr-generate -fcoverage-mapping -Ithird_party/cpp-httplib "${SRC}" harness/cov_runner.cc -o "${OUT_DIR}/cov/${target}"
 done
-echo "[build] done -> $OUT"
+
+echo "[build] done -> ${OUT_DIR}"
