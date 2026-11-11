@@ -19,7 +19,8 @@ command -v "$CXX" >/dev/null || CXX=clang++
 TARGETS=("$@")
 if [[ ${#TARGETS[@]} -eq 0 ]]; then
   TARGETS=(server_fuzzer client_fuzzer header_parser_fuzzer
-           url_parser_fuzzer multipart_parser_fuzzer)
+           url_parser_fuzzer multipart_parser_fuzzer
+           websocket_frame_fuzzer)
 fi
 
 COMMON=(-std=c++17 -g -I"$HTTPLIB" -I"$UPSTREAM_FUZZ" -DCPPHTTPLIB_ZLIB_SUPPORT)
@@ -53,8 +54,3 @@ for t in "${TARGETS[@]}"; do
       "$src" "$ROOT/harness/cov_runner.cc" -o "$OUT/cov/$t" "${LIBS[@]}"
 done
 echo "[build] done -> $OUT"
-
-# Build websocket_frame_fuzzer targets
-$AFL_CXX $CXXFLAGS -Ithird_party/cpp-httplib harness/websocket_frame_fuzzer.cc -o out/afl/websocket_frame_fuzzer
-$PLAIN_CXX $CXXFLAGS -Ithird_party/cpp-httplib harness/websocket_frame_fuzzer.cc -o out/plain/websocket_frame_fuzzer
-$COV_CXX $CXXFLAGS -fprofile-instr-generate -fcoverage-mapping -Ithird_party/cpp-httplib harness/websocket_frame_fuzzer.cc harness/cov_runner.cc -o out/cov/websocket_frame_fuzzer
