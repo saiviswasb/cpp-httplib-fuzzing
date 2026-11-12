@@ -7,3 +7,14 @@ results/**/afl/
 results/**/*.profraw
 results/**/*.profdata
 results/**/afl.log
+results/**/profiles/
+results/**/fuzz/
+results/**/fuzz_*.log
+
+# Campaigns: keep summary.csv and meta.json, not the raw AFL++ state
+results/campaigns/**/default/
+results/campaigns/**/afl.log
+# Triage: crash inputs and reports may be working exploits. Keep them out of
+# the PUBLIC repo until the maintainer has fixed the bug (responsible disclosure).
+results/triage/**/input*
+results/triage/**/report.txt
