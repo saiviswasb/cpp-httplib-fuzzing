@@ -1,0 +1,8 @@
+target,arm,run,run_time,execs_done,execs_per_sec,corpus_count,corpus_found,edges_found,total_edges,bitmap_cvg,saved_crashes,saved_hangs,stability
+server_fuzzer,baseline,1,14401,17882368,1241.74,15,0,248,13442,1.84%,0,0,100.00%
+client_fuzzer,baseline,1,14401,19606917,1361.48,15,0,3,4455,0.07%,0,0,100.00%
+header_parser_fuzzer,baseline,1,14401,19525108,1355.80,15,0,3,1535,0.20%,0,0,100.00%
+url_parser_fuzzer,baseline,1,14401,19696268,1367.68,15,0,3,683,0.44%,0,0,100.00%
+multipart_parser_fuzzer,baseline,1,14401,23169086,1608.82,15,0,3,1117,0.27%,0,0,100.00%
+websocket_frame_fuzzer,baseline,1,14401,24370753,1692.19,10,0,3,311,0.96%,0,0,100.00%
+chunked_decoder_fuzzer,baseline,1,14405,23508163,1631.87,2,0,3,779,0.39%,0,0,100.00%
