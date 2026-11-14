@@ -56,6 +56,8 @@ STAT_FIELDS = ["run_time", "execs_done", "execs_per_sec", "corpus_count",
                "corpus_found", "edges_found", "total_edges", "bitmap_cvg",
                "saved_crashes", "saved_hangs", "stability"]
 print_lock = threading.Lock()
+CHECK_AFTER = 300   # seconds before the watchdog checks progress
+MIN_EDGES = 10      # a run at or below this many edges is considered broken
 
 
 def log(msg: str) -> None:
@@ -135,15 +137,34 @@ def run_job(job: dict, seconds: int, cores: "queue.Queue[int]") -> dict:
                     cpu_governor=cpu_governor(), finished=False)
         (run_dir / "meta.json").write_text(json.dumps(meta, indent=1))
         log(f"start  {job['label']} on core {core}")
+        # Watchdog: a healthy run finds dozens of edges within minutes. If it
+        # is still at <= MIN_EDGES after CHECK_AFTER seconds, the harness is not
+        # receiving input (see baseline-01): stop it instead of wasting hours.
+        reason = ""
         with open(run_dir / "afl.log", "w") as lf:
-            rc = subprocess.run(cmd, env=env, stdout=lf, stderr=subprocess.STDOUT,
-                                timeout=seconds + 600).returncode
-        stats = read_stats(run_dir)
-        meta.update(finished=bool(stats), returncode=rc,
+            p = subprocess.Popen(cmd, env=env, stdout=lf, stderr=subprocess.STDOUT)
+            t0 = time.time()
+            checked = False
+            while p.poll() is None:
+                time.sleep(5)
+                if not checked and time.time() - t0 >= CHECK_AFTER:
+                    checked = True
+                    edges = int(read_stats(run_dir).get("edges_found", 0) or 0)
+                    if edges <= MIN_EDGES:
+                        reason = (f"watchdog: only {edges} edges after "
+                                  f"{CHECK_AFTER}s, harness is not getting input")
+                        p.terminate()
+                if time.time() - t0 > seconds + 600:
+                    reason = "killed: exceeded time limit"
+                    p.kill()
+            rc = p.wait()
+        stats = read_stats(run_dir) if not reason else {}
+        meta.update(finished=bool(stats), returncode=rc, failure=reason,
                     ended=dt.datetime.now().isoformat(timespec="seconds"))
         (run_dir / "meta.json").write_text(json.dumps(meta, indent=1))
         if not stats:
-            log(f"FAIL   {job['label']}: afl-fuzz did not start, see {run_dir}/afl.log")
+            log(f"FAIL   {job['label']}: {reason or 'afl-fuzz did not start'}"
+                f" (see {run_dir}/afl.log)")
         else:
             log(f"done   {job['label']}: edges {stats.get('edges_found')}, "
                 f"crashes {stats.get('saved_crashes')}, "
@@ -154,6 +175,7 @@ def run_job(job: dict, seconds: int, cores: "queue.Queue[int]") -> dict:
 
 
 def main() -> None:
+    global CHECK_AFTER
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--name", required=True, help="campaign name, e.g. exp-01")
@@ -167,8 +189,11 @@ def main() -> None:
     ap.add_argument("--resume", action="store_true",
                     help="keep finished runs, redo only unfinished ones")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--check-after", type=int, default=CHECK_AFTER,
+                    help="seconds before the stuck-run watchdog checks (default 300)")
     args = ap.parse_args()
 
+    CHECK_AFTER = args.check_after
     arms = ["baseline"] if args.mode == "baseline" else args.arms
     runs = 1 if args.mode == "baseline" else args.runs
     seconds = int(args.hours * 3600)
@@ -180,8 +205,12 @@ def main() -> None:
     jobs = []
     for k in range(1, runs + 1):
         for t in args.targets:
-            if not (ROOT / "out/afl" / t).exists():
+            b = ROOT / "out/afl" / t
+            if not b.exists():
                 sys.exit(f"error: out/afl/{t} missing; run scripts/build.sh")
+            if b"##SIG_AFL_PERSISTENT##" not in b.read_bytes():
+                sys.exit(f"error: out/afl/{t} has no AFL++ persistent driver; "
+                         f"rebuild with scripts/build.sh (do not link cov_runner.cc)")
             for a in arms:
                 seeds, d = resolve_inputs(t, a)
                 jobs.append({"label": f"{t}/{a}/run{k}", "target": t, "arm": a,
