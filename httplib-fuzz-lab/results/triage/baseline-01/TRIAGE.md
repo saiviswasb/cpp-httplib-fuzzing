@@ -1,3 +1,5 @@
+> **INVALID RUN.** The fuzzing binaries were built with cov_runner.cc instead of the AFL++ driver, so every input reached only ~3 edges. Replaced by baseline-02.
+
 # Crash & hang triage: campaign `baseline-01`
 
 - Crash inputs saved by AFL++: **0**
