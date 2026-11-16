@@ -1,0 +1,4 @@
+GET / HTTP/1.1
+Host: server1
+Host: server2
+

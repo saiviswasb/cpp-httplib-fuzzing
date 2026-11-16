@@ -1,0 +1,8 @@
+Initial coverage of each seed set before fuzzing (afl-showmap -C, out/plain, 2026-11-16)
+server_fuzzer/A: 1418 tuples   (17 hand-written seeds)
+server_fuzzer/B: 2263 tuples   (17 Claude Code seeds)
+server_fuzzer/C: 2355 tuples   (29 seeds after afl-cmin of A+B)
+multipart_parser_fuzzer/A: 399 tuples   (15 hand-written seeds)
+multipart_parser_fuzzer/B: 478 tuples   (15 Claude Code seeds)
+multipart_parser_fuzzer/C: 483 tuples   (23 seeds after afl-cmin of A+B)
+Dictionaries: A = upstream server_fuzzer.dict (210), B = Claude (60 / 52), C = A+B merged (267 / 259)
