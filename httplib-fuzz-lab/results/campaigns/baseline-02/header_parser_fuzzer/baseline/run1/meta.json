@@ -1,0 +1,21 @@
+{
+ "label": "header_parser_fuzzer/baseline/run1",
+ "target": "header_parser_fuzzer",
+ "arm": "baseline",
+ "run": "1",
+ "seed": "1001",
+ "seeds": "/repo/httplib-fuzz-lab/third_party/cpp-httplib/test/fuzzing/corpus",
+ "dict": "None",
+ "core": 2,
+ "seconds": 10800,
+ "cmd": "afl-fuzz -i /repo/httplib-fuzz-lab/third_party/cpp-httplib/test/fuzzing/corpus -o /repo/httplib-fuzz-lab/results/campaigns/baseline-02/header_parser_fuzzer/baseline/run1 -V 10800 -b 2 -s 1001 -- /repo/httplib-fuzz-lab/out/afl/header_parser_fuzzer",
+ "started": "2026-11-14T12:38:57",
+ "seeds_sha256": "22daecb1ef1c2006",
+ "repo_commit": "d017715",
+ "httplib_commit": "bd23a7b",
+ "cpu_governor": "performance",
+ "finished": true,
+ "returncode": 0,
+ "failure": "",
+ "ended": "2026-11-14T15:39:03"
+}
