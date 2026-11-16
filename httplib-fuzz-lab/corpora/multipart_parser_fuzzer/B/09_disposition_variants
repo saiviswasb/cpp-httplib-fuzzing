@@ -1,0 +1,22 @@
+cdVar--cdVar
+content-disposition:FORM-DATA;name=bare
+
+1
+--cdVar
+Content-Disposition:	 form-data;	name="semi;colon"; filename="a\"b.txt"
+
+2
+--cdVar
+Content-Disposition: form-data; name="u"; filename="x.txt"; filename*=UTF-8''%E2%82%AC%20rates.txt
+
+3
+--cdVar
+Content-Disposition: form-data; name="dup"; name="dup"; name="other"
+
+4
+--cdVar
+Content-Disposition: attachment; name="ignored"
+CONTENT-TYPE:   text/html  
+
+5
+--cdVar--

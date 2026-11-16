@@ -1,0 +1,13 @@
+cdBad--cdBad
+Content-Disposition: form-data; filename="noname.txt"
+
+missing name
+--cdBad
+Content-Disposition: form-data; name="x"; filename*=ISO-8859-1''abc
+
+bad charset
+--cdBad
+Bad Header Without Colon
+
+z
+--cdBad--

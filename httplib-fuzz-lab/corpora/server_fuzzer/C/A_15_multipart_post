@@ -1,0 +1,9 @@
+POST /upload HTTP/1.1
+Host: localhost
+Content-Type: multipart/form-data; boundary=X
+
+--X
+Content-Disposition: form-data; name="a"
+
+b
+--X--

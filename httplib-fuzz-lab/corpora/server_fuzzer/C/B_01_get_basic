@@ -1,0 +1,7 @@
+GET /index.html HTTP/1.1
+Host: localhost:8080
+User-Agent: fuzz/1.0
+Accept: text/html, application/json;q=0.9, */*;q=0.1
+Accept-Encoding: gzip, br, zstd
+Connection: keep-alive
+

@@ -1,0 +1,5 @@
+OPTIONS * HTTP/1.1
+Host: example.com
+Access-Control-Request-Method: PUT
+Origin: http://example.org
+

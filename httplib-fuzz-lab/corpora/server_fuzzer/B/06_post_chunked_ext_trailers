@@ -1,0 +1,14 @@
+POST /upload HTTP/1.1
+Host: localhost
+Transfer-Encoding: chunked
+Trailer: X-Checksum, X-Trailer-Two
+Content-Type: text/plain
+
+5;name=val;flag
+hello
+1A; ext="quoted;value"
+abcdefghijklmnopqrstuvwxyz
+0;last
+X-Checksum: abc123
+X-Trailer-Two: done
+
