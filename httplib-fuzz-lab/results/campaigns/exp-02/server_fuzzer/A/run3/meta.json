@@ -1,0 +1,21 @@
+{
+ "label": "server_fuzzer/A/run3",
+ "target": "server_fuzzer",
+ "arm": "A",
+ "run": "3",
+ "seed": "1003",
+ "seeds": "/repo/httplib-fuzz-lab/corpora/server_fuzzer/A",
+ "dict": "/repo/httplib-fuzz-lab/dicts/server_fuzzer/A.dict",
+ "core": 0,
+ "seconds": 7200,
+ "cmd": "afl-fuzz -i /repo/httplib-fuzz-lab/corpora/server_fuzzer/A -o /repo/httplib-fuzz-lab/results/campaigns/exp-02/server_fuzzer/A/run3 -V 7200 -b 0 -s 1003 -x /repo/httplib-fuzz-lab/dicts/server_fuzzer/A.dict -- /repo/httplib-fuzz-lab/out/afl/server_fuzzer",
+ "started": "2026-11-16T18:31:58",
+ "seeds_sha256": "585cf6934827204a",
+ "repo_commit": "1927570",
+ "httplib_commit": "bd23a7b",
+ "cpu_governor": "performance",
+ "finished": true,
+ "returncode": 0,
+ "failure": "",
+ "ended": "2026-11-16T20:32:03"
+}

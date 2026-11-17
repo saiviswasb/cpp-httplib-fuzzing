@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates git make build-essential python3 python3-pip \
       clang-${LLVM_VERSION} lld-${LLVM_VERSION} llvm-${LLVM_VERSION} \
       llvm-${LLVM_VERSION}-dev libclang-rt-${LLVM_VERSION}-dev \
-      zlib1g-dev lcov tmux zip \
+      zlib1g-dev lcov tmux zip python3-matplotlib \
     && rm -rf /var/lib/apt/lists/*
 
 # Build AFL++ from a pinned tag. QEMU/Nyx/Unicorn modes are for binary-only
