@@ -1,0 +1,21 @@
+{
+ "label": "multipart_parser_fuzzer/Bminus/run3",
+ "target": "multipart_parser_fuzzer",
+ "arm": "Bminus",
+ "run": "3",
+ "seed": "1003",
+ "seeds": "/repo/httplib-fuzz-lab/corpora/multipart_parser_fuzzer/Bminus",
+ "dict": "/repo/httplib-fuzz-lab/dicts/multipart_parser_fuzzer/Bminus.dict",
+ "core": 2,
+ "seconds": 7200,
+ "cmd": "afl-fuzz -i /repo/httplib-fuzz-lab/corpora/multipart_parser_fuzzer/Bminus -o /repo/httplib-fuzz-lab/results/campaigns/exp-02/multipart_parser_fuzzer/Bminus/run3 -V 7200 -b 2 -s 1003 -x /repo/httplib-fuzz-lab/dicts/multipart_parser_fuzzer/Bminus.dict -- /repo/httplib-fuzz-lab/out/afl/multipart_parser_fuzzer",
+ "started": "2026-11-17T17:12:01",
+ "seeds_sha256": "69d3223b5a6a788c",
+ "repo_commit": "1927570",
+ "httplib_commit": "bd23a7b",
+ "cpu_governor": "performance",
+ "finished": true,
+ "returncode": 0,
+ "failure": "",
+ "ended": "2026-11-17T19:12:01"
+}

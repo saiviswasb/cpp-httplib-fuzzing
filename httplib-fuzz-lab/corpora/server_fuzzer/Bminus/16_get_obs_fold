@@ -1,0 +1,6 @@
+GET /fold HTTP/1.1
+Host: localhost
+X-Folded: first part
+ continued part
+	and a tab continuation
+

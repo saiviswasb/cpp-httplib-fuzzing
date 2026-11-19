@@ -1,0 +1,16 @@
+POST /form HTTP/1.1
+Host: localhost
+Content-Type: multipart/form-data; boundary=----fuzzBoundary7MA4YWxk
+Content-Length: 293
+
+------fuzzBoundary7MA4YWxk
+Content-Disposition: form-data; name="field1"
+
+value one
+------fuzzBoundary7MA4YWxk
+Content-Disposition: form-data; name="file"; filename="a%20b.txt"; filename*=UTF-8''a%C3%A9.txt
+Content-Type: text/plain
+
+file contents
+line2
+------fuzzBoundary7MA4YWxk--
