@@ -1,0 +1,15 @@
+sev3ral--sev3ral
+Content-Disposition: form-data; name="a"
+
+alpha
+--sev3ral
+Content-Disposition: form-data; name="b"
+
+bravo
+second line
+--sev3ral
+Content-Disposition: form-data; name="c"
+Content-Type: application/json
+
+{"k":[1,2,3]}
+--sev3ral--
