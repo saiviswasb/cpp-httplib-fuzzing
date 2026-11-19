@@ -40,3 +40,10 @@
 - Also found: the earlier "Arm A" folders were copies of upstream's corpus, not
   hand-written seeds, and the multipart ones were in the wrong input format.
   Moved to corpora/_old_arm_a/ and replaced.
+
+## Entry 4: AI hypothesis tested and refuted (2026-11-19)
+- Claude (chat) explained B's lead by 3 "gate" seeds (gzip, trailers, filename*).
+- I tested it with an ablation (Bminus = B without those seeds, 3 runs x 2 h).
+- Result: Bminus still reached all 16 B-only functions; only ~1.5% fewer server
+  lines. The AI's explanation was wrong; the advantage is the dictionary plus
+  the broader seed set. Lesson: AI analysis must be verified experimentally.
